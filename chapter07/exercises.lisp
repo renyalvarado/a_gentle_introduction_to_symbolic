@@ -82,3 +82,81 @@
 
 (defun transpose (n mylist)
   (notes (normalize (raise n (numbers mylist)))))
+
+(defun pickout-between-1-and-5 (mylist)
+  (remove-if-not #'(lambda (n)
+		     (and (> n 1) (< n 5)))
+		 mylist))
+
+(defun count-the (mylist)
+  (length (remove-if-not #'(lambda (n)
+			     (eq n 'the))
+			 mylist)))
+
+(defun count-list-length-2 (mylist)
+  (length (remove-if-not #'(lambda (n)
+			     (equal (length n) 2))
+			 mylist)))
+
+(defun my-setdiff (x y)
+  (remove-if #'(lambda (e) (member e y))
+	     x))
+
+(defun my-setintersection (x y)
+  (remove-if-not #'(lambda (e) (member e y))
+	     x))
+
+(defun my-setunion (x y)
+  (append (my-setdiff y x) x))
+
+(defun rank (card)
+  (car card))
+
+(defun suit (card)
+  (cadr card))
+
+(defvar my-hand)
+
+(setf my-hand '((3 hearts)
+		(5 clubs)
+		(2 diamonds)
+		(4 diamonds)
+		(ace spades)))
+
+(defun count-suit (my-suit)
+  (length (remove-if-not #'(lambda (card)
+			     (eq my-suit (suit card)))
+			 my-hand)))
+
+(defvar colors)
+
+(setf colors '((clubs black)
+	       (diamonds red)
+	       (hearts red)
+	       (spades black)))
+
+(defun color-of (card)
+  (cadr (assoc (suit card) colors)))
+
+(defun first-red (hand)
+  (find-if #'(lambda (card)
+	       (eq 'red (color-of  card)))
+	   hand))
+
+(defun black-cards (hand)
+  (remove-if-not #'(lambda (card)
+		     (eq 'black (color-of  card)))
+		 hand))
+
+(defun what-rank (suit hand)
+  (mapcar #'car
+	  (remove-if-not #'(lambda (card)
+			     (eq suit (suit card)))
+			 hand)))
+
+(defvar all-ranks)
+
+(setf all-ranks '(2 3 4 5 6 7 8 9 10 jack queen king king ace))
+
+(defun higher-rank-p (x y)
+  (consp (member (rank y) (member (rank x) all-ranks))))
