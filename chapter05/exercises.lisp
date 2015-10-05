@@ -1,0 +1,83 @@
+(defun fair-coin ()
+  "Ejemplo de Prueba de documentación"
+  (let ((toss (random 101)))
+    (cond ((< toss 50) 'heads)
+	  ((> toss 50) 'tails)
+	  (t 'edge))))
+
+(defun throw-die ()
+  (+ (random 6) 1))
+
+(defun throw-dice ()
+  (list (throw-die) (throw-die)))
+
+(defun snake-eye-p (mythrow)
+  (let ((first-throw (car mythrow))
+	(second-throw (cadr mythrow)))
+    (and (equal first-throw 1)
+	 (equal second-throw 1))))
+
+(defun boxcars-p (mythrow)
+  (let ((first-throw (car mythrow))
+	(second-throw (cadr mythrow)))
+    (and (equal first-throw 6)
+	 (equal second-throw 6))))
+
+(defun instant-win-p (mythrow)
+  (let ((first-throw (car mythrow)))
+    (or (equal first-throw 7)
+	(equal first-throw 11))
+    ))
+
+(defun instant-loss-p (mythrow)
+  (let ((first-throw (car mythrow)))
+    (or (equal first-throw 2)
+	(equal first-throw 3)
+	(equal first-throw 12))
+    ))
+
+(defun instant-win2-p (mythrow)
+  (let* ((first-throw (car mythrow))
+	(second-throw (cadr mythrow))
+	(total (+ first-throw second-throw)))
+    (or (equal total 7)
+	(equal total 11))
+    ))
+
+(defun instant-loss2-p (mythrow)
+  (let* ((first-throw (car mythrow))
+	(second-throw (cadr mythrow))
+	(total (+ first-throw second-throw)))
+    (or (equal total 2)
+	(equal total 3)
+	(equal total 12))
+    ))
+
+(defun say-throw (mythrow)
+  (let* ((first-throw (car mythrow))
+	 (second-throw (cadr mythrow))
+	 (mysum (+ first-throw second-throw)))
+    (cond  
+      ((equal mysum 2) 'snake-eyes)
+      ((equal mysum 12) 'boxcars )
+      (t mysum))))
+
+(defun craps ()
+  (let* ((mythrow (list 1 6))
+	 (throw1 (car mythrow))
+	 (throw2 (cadr mythrow))
+	 (result-message (say-throw mythrow))
+	 (status-message (if (instant-loss2-p mythrow)
+			     '(you loose)
+			     (if (instant-win2-p mythrow)
+				 '(you win)
+				 (list (+ throw1 throw2)))))
+	 )
+    ;; (append 'throw throw1
+    ;; 	    'and   throw2
+    ;; 	    '--    result-message
+    ;; 	    '--    )
+    (append `(throw ,throw1 and ,throw2 -- ,result-message -- )
+	    status-message)
+    )
+  )
