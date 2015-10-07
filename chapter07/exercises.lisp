@@ -160,3 +160,112 @@
 
 (defun higher-rank-p (x y)
   (consp (member (rank y) (member (rank x) all-ranks))))
+
+(defun total-list (mylist)
+  (reduce #'+ (mapcar #'length mylist)))
+
+(defun all-odd (mylist)
+  (every #'oddp mylist))
+
+(defun none-odd (mylist)
+  (every #'evenp mylist))
+
+(defun not-all-odd (mylist)
+  (find-if #'evenp mylist))
+
+(defun not-none-odd (mylist)
+  (find-if #'oddp mylist))
+
+
+(defvar database)
+
+(setf database 
+      '((b1 shape brick)
+	(b1 color green)
+	(b1 size small)
+	(b1 supported-by b2)
+	(b1 supported-by b3)
+	
+	(b2 shape brick)
+	(b2 color red)
+	(b2 size small)
+	(b2 supports b1)
+	(b2 left-of b3)
+
+	(b3 shape brick)
+	(b3 color red)
+	(b3 size small)
+	(b3 supports b1)
+	(b3 right-of b2)
+
+	(b4 shape pyramid)
+	(b4 color blue)
+	(b4 size large)
+	(b4 supported-by b5)
+
+	(b5 shape cube)
+	(b5 color green)
+	(b5 size large)
+	(b5 supports b4)
+
+	(b6 shape brick)
+	(b6 color purple)
+	(b6 size large)))
+
+(defun match-element (x y)
+  (or (eq x y)
+      (eq y '?)))
+
+(defun match-triple (x y)
+  (every #'match-element x y))
+
+(defun fetch (element)
+  (remove-if-not #'(lambda (n)
+		     (match-triple n element))
+		 database))
+
+; What shape is block b4?
+(fetch '(b4 shape ?))
+
+; Which blocks are bricks?
+(fetch '(? shape brick))
+
+; What relation is b2 to b3?
+(fetch '(b2 ? b3))
+
+; List the color of every block
+(fetch '(? color ?))
+
+; What facts are known about block b4?
+(fetch '(b4 ? ?))
+
+(defun ask-color (block-name)
+  (list block-name 'color '?))
+
+(defun supporters (x)
+  (mapcar #'car (fetch (list '? 'supports x))))
+
+(defun supp-cube (block)
+  (> (length (mapcar #'(lambda (n)
+			 (fetch (list n 'shape 'cube)))
+		     (supporters block)))
+     0))
+
+(defun desc1 (block)
+  (fetch (list block '? '?)))
+
+(defun desc2 (block)
+  (mapcar #'cdr (desc1 block)))
+
+(defun description (block)
+  (reduce #'append (desc2 block) ))
+
+(defvar words)
+
+(setf words '((one un)
+		      (two deux)
+		      (three trois)
+		      (four quatre)
+	      (five cinq)))
+
+(mapcar #'append words (mapcar #'list '(uno dos tres cuatro cinco)))
