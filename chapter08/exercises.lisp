@@ -215,3 +215,24 @@
   (cond ((null x) nil)
 	(t (cons x
 		 (sublists2 (cdr x))))))
+
+(defun my-reverse (tree)
+  (aux-reverse tree '()))
+
+(defun aux-reverse (tree reverted)
+  (cond ((null tree) reverted)
+	(t (aux-reverse (cdr tree)
+			(cons (car tree) reverted)))))
+
+(defun largest-even (x)
+  (cond ((null x) 0)
+	((oddp (car x)) (largest-even (cdr x)))
+	(t (max (car x)
+		(largest-even (cdr x))))))
+
+(defun huge (n)
+  (aux-huge n n))
+
+(defun aux-huge (n expp)
+  (cond ((zerop expp) 1)
+	(t (* n (aux-huge n (- expp 1))))))
