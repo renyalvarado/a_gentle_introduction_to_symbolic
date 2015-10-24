@@ -236,3 +236,149 @@
 (defun aux-huge (n expp)
   (cond ((zerop expp) 1)
 	(t (* n (aux-huge n (- expp 1))))))
+
+(defun every-other (x)
+  (cond ((null x) nil)
+	(t (cons (car x)
+		 (every-other (cddr x))))))
+
+(defun left-half (x)
+  (left-half-aux x (ceiling (length x) 2)))
+
+(defun left-half-aux (x n)
+  (cond ((zerop n) nil)
+	(t (cons (car x)
+		 (left-half-aux (cdr x) (- n 1))))
+	))
+
+(defun merge-lists (x y)
+  (cond ((null x) y)
+	((null y) x)
+	((< (car x) (car y)) (cons (car x)
+				   (merge-lists (cdr x) y)))
+	(t (cons (car y)
+		 (merge-lists x (cdr y) )))
+	))
+
+(defun fact-debugger (n)
+  (cond ((zerop n) (break "N is zero"))
+	(t (* n (fact-debugger (- n 1))))))
+
+
+(defvar family)
+
+(setf family
+      '((colin nil nil)
+	(deirdre nil nil)
+	(arthur nil nil)
+	(kate nil nil)
+	(frank nil nil)
+	(linda nil nil)
+	(suzanne colin deirdre)
+	(bruce arthur kate)
+	(charles arthur kate)
+	(david arthur kate)
+	(ellen arthur kate)
+	(george frank linda)
+	(hillary frank linda)
+	(andre nil nil)
+	(tamara bruce suzanne)
+	(vincent bruce suzanne)
+	(wanda nil nil)
+	(ivan george ellen)
+	(julie george ellen)
+	(marie george ellen)
+	(nigel andre hillary)
+	(frederick nil tamara)
+	(zelda vincent wanda)
+	(joshua ivan wanda)
+	(quentin nil nil)
+	(robert quentin julie)
+	(olivia nigel marie)
+	(peter nigel marie)
+	(erica nil nil)
+	(yvette robert zelda)
+	(diana peter erica)))
+
+
+(defun father (x)
+  (cadr (assoc x family)))
+
+(defun mother (x)
+  (caddr (assoc x family)))
+
+(defun parents (x)
+  (union (and (father x) (list (father x)))
+	 (and (mother x) (list (mother x)))))
+
+(defun children (person)
+  (children-aux person family))
+
+(defun children-aux (person tmp-family)
+  (cond ((null tmp-family) nil)
+	((member person (cdar tmp-family))
+	 (cons (caar tmp-family)
+	       (children-aux person (cdr tmp-family))))
+	(t (children-aux person (cdr tmp-family)))))
+
+(defun siblings (person)
+  (set-difference (union (children (father person))
+			 (children (mother person)))
+		  (list person)))
+
+(defun mapunion (f mylist)
+  (and mylist (reduce #'union (mapcar f mylist))))
+
+(defun grandparents (person)
+  (mapunion #'parents (parents person)))
+
+(defun cousins (person)
+  (mapunion #'children
+	    (mapunion #'siblings
+		      (parents person))))
+
+(defun descended-from-aux (x myparents)
+  (cond ((null myparents) nil)
+	((member x myparents) t)
+	(t (descended-from-aux x (mapunion #'parents myparents)))))
+
+(defun descended-from (x y)
+  (descended-from-aux y (parents x)))
+
+(defun descended-from2 (x y)
+  (cond ((null x) nil)
+	((member y (parents x)) t)
+	(t (or (descended-from2 (father x) y)
+	       (descended-from2 (mother x) y)))))
+
+(defun ancestors (person)
+  (cond ((null person) nil)
+	(t (union (parents person)
+		  (union (ancestors (father person))
+			 (ancestors (mother person)))))))
+
+(defun generation-gap (x y)
+  (cond ((null x) 0)
+	((member y (parents x)) 1)
+	(t (max (+ 1 (generation-gap (father x) y))
+		(+ 1 (generation-gap (mother x) y))))
+	))
+
+(defun generation-gap-aux (x y n)
+  (cond ((null x) nil)
+	((equal x y) n)
+	(t (or (generation-gap-aux (father x) y (+ n 1))
+	       (generation-gap-aux (mother x) y (+ n 1))))))
+
+(defun generation-gap (x y)
+  (generation-gap-aux x y 0))
+
+(descended-from 'robert 'deirdre)
+
+(ancestors 'yvette)
+
+(generation-gap 'olivia 'frank)
+
+(cousins 'peter)
+
+(grandparents 'olivia)
