@@ -382,3 +382,87 @@
 (cousins 'peter)
 
 (grandparents 'olivia)
+
+(defun tr-count-up-aux (n mylist)
+  (cond ((zerop n) mylist)
+	(t (tr-count-up-aux (- n 1) (cons n mylist)))))
+
+(defun tr-count-up (n)
+  (tr-count-up-aux n '()))
+
+
+(defun fact-aux (n result)
+  (cond ((zerop n) result)
+	(t (fact-aux (- n 1) (* n result)))
+    ))
+
+(defun tr-fact (n)
+  (fact-aux n 1))
+
+(defun tr-union-aux (x y result)
+  (cond ((null x) (append y result))
+	((not (member (car x) y))
+	 (tr-union-aux (cdr x) y (cons (car x)
+				       result)))
+	(t (tr-union-aux (cdr x) y result))))
+
+(defun tr-union (x y)
+  (tr-union-aux x y '()))
+
+(defun tr-intersection-aux (x y result)
+  (cond ((null x) result)
+	((member (car x) y)
+	 (tr-intersection-aux (cdr x) y
+			      (cons (car x) result)))
+	(t (tr-intersection-aux (cdr x) y result))))
+
+(defun tr-intersection (x y)
+  (tr-intersection-aux x y '()))
+
+
+(defun tr-set-difference-aux (x y result)
+  (cond ((null x) result)
+	((member (car x) y)
+	 (tr-set-difference-aux (cdr x) y result))
+	(t (tr-set-difference-aux (cdr x) y
+				  (cons (car x) result)))))
+
+(defun tree-find-if (f x)
+  (cond ((and x (atom x) (funcall f x)) x)
+	((atom x) nil)
+	(t (or (tree-find-if f (car x))
+	       (tree-find-if f (cdr x))))))
+
+(defun lb-tr-count-slices (loaf)
+  (labels ((lb-tr-cs1 (loaf-int n)
+	     (cond ((null loaf-int) n)
+		   (t (lb-tr-cs1 (cdr loaf-int) (+ n 1))))))
+    (lb-tr-cs1 loaf 0)))
+
+
+(defun lb-tr-reverse (tree)
+  (labels ((aux-reverse-int (tree-int reverted)
+	     (cond ((null tree-int) reverted)
+		   (t (aux-reverse-int (cdr tree-int)
+				       (cons (car tree-int) reverted))))))
+    (aux-reverse-int tree '())))
+
+(defun arith-eval (expre)
+  (cond ((numberp expre) expre)
+	(t (funcall (cadr expre)
+		    (arith-eval (car expre))
+		    (arith-eval (caddr expre))))))
+
+(defun legalp (expre)
+  (cond ((numberp expre) t)
+	(t (and (member (cadr expre) '(+ - * /))
+		(legalp (car expre))
+		(legalp (caddr expre))))))
+
+(defun factor-tree (mynumber)
+  (labels ((factor-tree-aux (n p)
+	     (cond ((equal n p) p)
+		   ((zerop (rem n p))
+		    (list n p (factor-tree-help (/ n p) p)))
+		   (t (factor-tree-help n (+ p 1))))))
+    (factor-tree-aux mynumber 2)))
