@@ -1,3 +1,5 @@
+;; Format
+
 (defun pilots ()
   (format t "~&There are old pilots,
              ~&and there are bold pilots,
@@ -44,3 +46,23 @@
 		      (print-my-element (+ n 1) (cdr mylist)))))	   )
     (print-my-element 0 mylist)))
 
+
+;; Read
+
+(defun pay ()
+  (format t "~&Pay Given")
+  (format t "~&Hourly wage: ")
+  (let ((wage (read)))
+    (format t "~&Hours:")
+    (let ((hours (read)))
+      (format t "~&Gross pay: ~A" (* wage hours))
+	)))
+
+(defun cookie-monster ()
+  (format t "~&Gime me cookie!!!")
+  (format t "~&Cookie? ")
+  (let ((answer (read)))
+    (cond ((equal answer 'cookie)
+	   (format t "Thank you! ... Munch munch much ... BURP"))
+	  (t (format t "No want ~A~%~%" answer)
+	     (cookie-monster)))))
