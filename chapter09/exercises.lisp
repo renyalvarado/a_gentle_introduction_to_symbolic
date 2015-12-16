@@ -66,3 +66,40 @@
 	   (format t "Thank you! ... Munch munch much ... BURP"))
 	  (t (format t "No want ~A~%~%" answer)
 	     (cookie-monster)))))
+
+;; 9.10
+
+(defun space-over (n)
+  (cond ((< n 0)
+	 (format t "Error"))
+	((> n 0)
+	 (format t " ")
+	 (space-over (- n 1)))
+	(t nil)))
+
+(defun plot-one-point (plotting-string y-val)
+  (space-over y-val)
+  (format t "~A~&" plotting-string))
+
+(defun plot-points (plotting-string mylist)
+  (mapcar #'(lambda (n) (plot-one-point plotting-string n)) mylist))
+
+(defun generate (m n)
+  (cond ((> m n) nil)
+	(t (cons m (generate (+ m 1) n)))))
+
+(defun square (n)
+  (* n n))
+
+(defun make-graph ()
+  (format t "Function to graph? ")
+  (let ((func (read)))
+      (format t "Starting x value? ")
+   (let ((start (read)))
+     (format t "Ending x value? ")
+     (let ((end (read)))
+       (format t "Plottin string? ")
+       (let ((plotting-string (read)))
+	 (plot-points plotting-string
+		      (mapcar func (generate start end))))))))
+
