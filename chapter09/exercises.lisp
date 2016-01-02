@@ -103,3 +103,33 @@
 	 (plot-points plotting-string
 		      (mapcar func (generate start end))))))))
 
+;; reading file with eof
+
+(defun read-all-objects (stream eof-indicator)
+  (let ((result (read stream nil eof-indicator)))
+    (if (eq result eof-indicator)
+	nil
+	(cons result
+	      (read-all-objects stream eof-indicator)))))
+
+(defun dot-prin1 (mylist)
+  (cond ((atom mylist) (format t "~S" mylist))
+	(t (format t "(")
+	   (dot-prin1 (car mylist))
+	   (format t " . ")
+	   (dot-prin1 (cdr mylist))
+	   (format t ")"))))
+
+(defun hybrid-prin1 (mylist)
+  (labels ((print-car (mycar)
+	     (format t "(")
+	     (hybrid-prin1 mycar))
+	   (print-cdr (mycdr)
+	     (cond ((null mycdr) (format t ")"))
+		   ((atom mycdr) (format t " . ~S)" mycdr) )
+		   (t (format t " ")
+		      (hybrid-prin1 (car mycdr))
+		      (print-cdr (cdr mycdr))))))
+    (cond ((atom mylist) (format t "~S" mylist))
+	  (t  (print-car (car mylist))
+	      (print-cdr (cdr mylist))))))
