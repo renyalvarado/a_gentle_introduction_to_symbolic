@@ -95,8 +95,28 @@
 (defun random-move-strategy (board)
   (list (pick-random-empty-position board) "random move"))
 
+(defun win-or-block (board target-sum)
+  (let ((triplet (find-if #'(lambda (trip)
+			      (equal (sum-triplet board trip)
+				     target-sum))
+			  *triplets*)))
+    (when triplet
+      (find-empty-position board triplet))))
+
+(defun make-three-in-a-row (board)
+  (let ((pos (win-or-block board
+			   (* 2 *computer*))))
+    (and pos (list pos "make a three in a row"))))
+
+(defun block-opponent-win (board)
+  (let ((pos (win-or-block board
+			   (* 2 *opponent*))))
+    (and pos (list pos "block opponent"))))
+
 (defun choose-best-move (board)
-  (random-move-strategy board))
+  (or (make-three-in-a-row board)
+      (block-opponent-win board)
+      (random-move-strategy board)))
 
 (defun computer-move (board)
   (let* ((best-move (choose-best-move board))
@@ -123,6 +143,11 @@
       (opponent-move (make-board))
       (computer-move (make-board))))
 
+(defun find-empty-position (board squares)
+  (find-if #'(lambda (pos)
+	       (zerop (nth pos board)))
+	   squares))
+
 (defvar b)
 (defvar *computer*)
 (defvar *opponent*)
@@ -135,3 +160,28 @@
       '((1 2 3) (4 5 6) (7 8 9)
 	(1 4 7) (2 5 8) (3 6 9)
 	(1 5 9) (3 5 7)))
+
+;; 10.5
+(defun good-style (x y)
+  (let* ((tmax (max x y))
+	 (avg (/ (+ x y) 2.0))
+	 (pct (/ (* 100 avg) tmax)))
+    (list 'average avg 'is pct 'percent 'of 'max tmax)))
+
+;; Keyboard Exercise
+
+; a
+(defvar *corners*)
+(defvar *sides*)
+
+(setf *corners* '(1 3 7 9))
+(setf *sides* '(2 4 6 8))
+
+(defun chop (mylist)
+  (if (consp mylist)
+      (setf (cdr mylist) nil))
+  mylist)
+
+
+(defun ntack (mylist element)
+  (nconc mylist (list element)))
